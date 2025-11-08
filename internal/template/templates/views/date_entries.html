@@ -7,6 +7,37 @@
         <span aria-hidden="true">(<span class="unread-counter">{{ .countUnread }}</span>)</span>
     </h1>
     <span id="page-header-title-count" class="sr-only">{{ plural "page.unread_entry_count" .countUnread .countUnread }}</span>
+    {{ if gt .countUnread 0 }}
+    <nav aria-label="{{ t "page.date_entries.title" }} sections">
+        <ul>
+            {{ if gt .countToday 0 }}
+            <li>
+                <a href="#date-today">{{ t "date_group.today" }} ({{ .countToday }})</a>
+            </li>
+            {{ end }}
+            {{ if gt .countYesterday 0 }}
+            <li>
+                <a href="#date-yesterday">{{ t "date_group.yesterday" }} ({{ .countYesterday }})</a>
+            </li>
+            {{ end }}
+            {{ if gt .countWeek 0 }}
+            <li>
+                <a href="#date-week">{{ t "date_group.this_week" }} ({{ .countWeek }})</a>
+            </li>
+            {{ end }}
+            {{ if gt .countMonth 0 }}
+            <li>
+                <a href="#date-month">{{ t "date_group.this_month" }} ({{ .countMonth }})</a>
+            </li>
+            {{ end }}
+            {{ if gt .countEarlier 0 }}
+            <li>
+                <a href="#date-earlier">{{ t "date_group.earlier" }} ({{ .countEarlier }})</a>
+            </li>
+            {{ end }}
+        </ul>
+    </nav>
+    {{ end }}
 </section>
 {{ end }}
 
@@ -15,8 +46,8 @@
     <p role="alert" class="alert">{{ t "alert.no_unread_entry" }}</p>
 {{ else }}
     {{ if gt (len .todayEntries) 0 }}
-    <section class="date-group">
-        <h2 class="date-group-header">{{ t "date_group.today" }}</h2>
+    <section class="date-group" id="date-today">
+        <h2 class="date-group-header">{{ t "date_group.today" }} <span class="count">({{ .countToday }})</span></h2>
         <div class="items hide-read-items">
             {{ range .todayEntries -}}
             <article
@@ -48,8 +79,8 @@
     {{ end }}
 
     {{ if gt (len .yesterdayEntries) 0 }}
-    <section class="date-group">
-        <h2 class="date-group-header">{{ t "date_group.yesterday" }}</h2>
+    <section class="date-group" id="date-yesterday">
+        <h2 class="date-group-header">{{ t "date_group.yesterday" }} <span class="count">({{ .countYesterday }})</span></h2>
         <div class="items hide-read-items">
             {{ range .yesterdayEntries -}}
             <article
@@ -81,8 +112,8 @@
     {{ end }}
 
     {{ if gt (len .weekEntries) 0 }}
-    <section class="date-group">
-        <h2 class="date-group-header">{{ t "date_group.this_week" }}</h2>
+    <section class="date-group" id="date-week">
+        <h2 class="date-group-header">{{ t "date_group.this_week" }} <span class="count">({{ .countWeek }})</span></h2>
         <div class="items hide-read-items">
             {{ range .weekEntries -}}
             <article
@@ -114,8 +145,8 @@
     {{ end }}
 
     {{ if gt (len .monthEntries) 0 }}
-    <section class="date-group">
-        <h2 class="date-group-header">{{ t "date_group.this_month" }}</h2>
+    <section class="date-group" id="date-month">
+        <h2 class="date-group-header">{{ t "date_group.this_month" }} <span class="count">({{ .countMonth }})</span></h2>
         <div class="items hide-read-items">
             {{ range .monthEntries -}}
             <article
@@ -147,8 +178,8 @@
     {{ end }}
 
     {{ if gt (len .earlierEntries) 0 }}
-    <section class="date-group">
-        <h2 class="date-group-header">{{ t "date_group.earlier" }}</h2>
+    <section class="date-group" id="date-earlier">
+        <h2 class="date-group-header">{{ t "date_group.earlier" }} <span class="count">({{ .countEarlier }})</span></h2>
         <div class="items hide-read-items">
             {{ range .earlierEntries -}}
             <article
