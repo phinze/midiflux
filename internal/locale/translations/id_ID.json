@@ -391,6 +391,7 @@
     "form.user.label.password": "Kata Sandi",
     "form.user.label.username": "Nama Pengguna",
     "menu.about": "Tentang",
+    "menu.all_entries": "All",
     "menu.add_feed": "Tambah langganan",
     "menu.add_user": "Tambah pengguna",
     "menu.api_keys": "Kunci API",

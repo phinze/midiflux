@@ -394,6 +394,7 @@
     "form.user.label.password": "Wachtwoord",
     "form.user.label.username": "Gebruikersnaam",
     "menu.about": "Over",
+    "menu.all_entries": "All",
     "menu.add_feed": "Feed toevoegen",
     "menu.add_user": "Gebruiker toevoegen",
     "menu.api_keys": "API-sleutels",

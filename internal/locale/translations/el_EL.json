@@ -394,6 +394,7 @@
     "form.user.label.password": "Κωδικός",
     "form.user.label.username": "Χρήστης",
     "menu.about": "Περί",
+    "menu.all_entries": "All",
     "menu.add_feed": "Προσθήκη συνδρομής",
     "menu.add_user": "Προσθήκη χρήστη",
     "menu.api_keys": "Κλειδιά API",

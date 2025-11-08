@@ -391,6 +391,7 @@
     "form.user.label.password": "密码",
     "form.user.label.username": "用户名",
     "menu.about": "关于",
+    "menu.all_entries": "All",
     "menu.add_feed": "添加订阅源",
     "menu.add_user": "添加用户",
     "menu.api_keys": "API 密钥",

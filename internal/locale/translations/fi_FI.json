@@ -394,6 +394,7 @@
     "form.user.label.password": "Salasana",
     "form.user.label.username": "Käyttäjätunnus",
     "menu.about": "Tietoja",
+    "menu.all_entries": "All",
     "menu.add_feed": "Lisää tilaus",
     "menu.add_user": "Lisää käyttäjä",
     "menu.api_keys": "API-avaimet",

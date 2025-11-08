@@ -391,6 +391,7 @@
     "form.user.label.password": "パスワード",
     "form.user.label.username": "ユーザー名",
     "menu.about": "ソフトウェア情報",
+    "menu.all_entries": "All",
     "menu.add_feed": "フィードを購読",
     "menu.add_user": "ユーザーを追加",
     "menu.api_keys": "API キー",

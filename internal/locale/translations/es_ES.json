@@ -394,6 +394,7 @@
     "form.user.label.password": "Contraseña",
     "form.user.label.username": "Nombre de usuario",
     "menu.about": "Acerca de",
+    "menu.all_entries": "All",
     "menu.add_feed": "Agregar fuente",
     "menu.add_user": "Agregar usuario",
     "menu.api_keys": "Claves API",

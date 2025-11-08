@@ -394,6 +394,7 @@
     "form.user.label.password": "Parola",
     "form.user.label.username": "Kullanıcı Adı",
     "menu.about": "Hakkında",
+    "menu.all_entries": "All",
     "menu.add_feed": "Besleme ekle",
     "menu.add_user": "Kullanıcı ekle",
     "menu.api_keys": "API Anahtarları",

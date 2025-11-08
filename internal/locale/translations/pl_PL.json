@@ -397,6 +397,7 @@
     "form.user.label.password": "Hasło",
     "form.user.label.username": "Nazwa użytkownika",
     "menu.about": "O czytniku",
+    "menu.all_entries": "All",
     "menu.add_feed": "Dodaj kanał",
     "menu.add_user": "Dodaj użytkownika",
     "menu.api_keys": "Klucze API",

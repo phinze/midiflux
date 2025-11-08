@@ -394,6 +394,7 @@
     "form.user.label.password": "Mot de passe",
     "form.user.label.username": "Nom d'utilisateur",
     "menu.about": "À propos",
+    "menu.all_entries": "All",
     "menu.add_feed": "Ajouter un abonnement",
     "menu.add_user": "Ajouter un utilisateur",
     "menu.api_keys": "Clés d'API",

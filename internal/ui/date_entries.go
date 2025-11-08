@@ -22,6 +22,9 @@ func (h *handler) showDateEntriesPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get section filter from query parameter (default: "all")
+	section := request.QueryStringParam(r, "section", "all")
+
 	// Get current time in user's timezone
 	now := timezone.Now(user.Timezone)
 
@@ -35,83 +38,133 @@ func (h *handler) showDateEntriesPage(w http.ResponseWriter, r *http.Request) {
 	// Month starts on the 1st
 	monthStart := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
 
-	// Query for "Today" entries
-	todayBuilder := h.store.NewEntryQueryBuilder(user.ID)
-	todayBuilder.WithStatus(model.EntryStatusUnread)
-	todayBuilder.WithGloballyVisible()
-	todayBuilder.WithSorting(user.EntryOrder, user.EntryDirection)
-	todayBuilder.WithSorting("id", user.EntryDirection)
-	todayBuilder.AfterPublishedDate(todayStart)
-	todayEntries, err := todayBuilder.GetEntries()
+	// Helper function to count entries for a date range
+	countForDateRange := func(afterDate, beforeDate *time.Time) (int, error) {
+		builder := h.store.NewEntryQueryBuilder(user.ID)
+		builder.WithStatus(model.EntryStatusUnread)
+		builder.WithGloballyVisible()
+		if afterDate != nil {
+			builder.AfterPublishedDate(*afterDate)
+		}
+		if beforeDate != nil {
+			builder.BeforePublishedDate(*beforeDate)
+		}
+		return builder.CountEntries()
+	}
+
+	// Helper function to fetch entries for a date range
+	fetchForDateRange := func(afterDate, beforeDate *time.Time) ([]*model.Entry, error) {
+		builder := h.store.NewEntryQueryBuilder(user.ID)
+		builder.WithStatus(model.EntryStatusUnread)
+		builder.WithGloballyVisible()
+		builder.WithSorting(user.EntryOrder, user.EntryDirection)
+		builder.WithSorting("id", user.EntryDirection)
+		if afterDate != nil {
+			builder.AfterPublishedDate(*afterDate)
+		}
+		if beforeDate != nil {
+			builder.BeforePublishedDate(*beforeDate)
+		}
+		return builder.GetEntries()
+	}
+
+	// Get counts for all sections (for navigation)
+	countToday, err := countForDateRange(&todayStart, nil)
 	if err != nil {
 		html.ServerError(w, r, err)
 		return
 	}
 
-	// Query for "Yesterday" entries
-	yesterdayBuilder := h.store.NewEntryQueryBuilder(user.ID)
-	yesterdayBuilder.WithStatus(model.EntryStatusUnread)
-	yesterdayBuilder.WithGloballyVisible()
-	yesterdayBuilder.WithSorting(user.EntryOrder, user.EntryDirection)
-	yesterdayBuilder.WithSorting("id", user.EntryDirection)
-	yesterdayBuilder.AfterPublishedDate(yesterdayStart)
-	yesterdayBuilder.BeforePublishedDate(todayStart)
-	yesterdayEntries, err := yesterdayBuilder.GetEntries()
+	countYesterday, err := countForDateRange(&yesterdayStart, &todayStart)
 	if err != nil {
 		html.ServerError(w, r, err)
 		return
 	}
 
-	// Query for "This Week" entries (excluding today and yesterday)
-	weekBuilder := h.store.NewEntryQueryBuilder(user.ID)
-	weekBuilder.WithStatus(model.EntryStatusUnread)
-	weekBuilder.WithGloballyVisible()
-	weekBuilder.WithSorting(user.EntryOrder, user.EntryDirection)
-	weekBuilder.WithSorting("id", user.EntryDirection)
-	weekBuilder.AfterPublishedDate(weekStart)
-	weekBuilder.BeforePublishedDate(yesterdayStart)
-	weekEntries, err := weekBuilder.GetEntries()
+	countWeek, err := countForDateRange(&weekStart, &yesterdayStart)
 	if err != nil {
 		html.ServerError(w, r, err)
 		return
 	}
 
-	// Query for "This Month" entries (excluding this week)
-	monthBuilder := h.store.NewEntryQueryBuilder(user.ID)
-	monthBuilder.WithStatus(model.EntryStatusUnread)
-	monthBuilder.WithGloballyVisible()
-	monthBuilder.WithSorting(user.EntryOrder, user.EntryDirection)
-	monthBuilder.WithSorting("id", user.EntryDirection)
-	monthBuilder.AfterPublishedDate(monthStart)
-	monthBuilder.BeforePublishedDate(weekStart)
-	monthEntries, err := monthBuilder.GetEntries()
+	countMonth, err := countForDateRange(&monthStart, &weekStart)
 	if err != nil {
 		html.ServerError(w, r, err)
 		return
 	}
 
-	// Query for "Earlier" entries (before this month)
-	earlierBuilder := h.store.NewEntryQueryBuilder(user.ID)
-	earlierBuilder.WithStatus(model.EntryStatusUnread)
-	earlierBuilder.WithGloballyVisible()
-	earlierBuilder.WithSorting(user.EntryOrder, user.EntryDirection)
-	earlierBuilder.WithSorting("id", user.EntryDirection)
-	earlierBuilder.BeforePublishedDate(monthStart)
-	earlierEntries, err := earlierBuilder.GetEntries()
+	countEarlier, err := countForDateRange(nil, &monthStart)
 	if err != nil {
 		html.ServerError(w, r, err)
 		return
+	}
+
+	// Initialize empty entry slices
+	var todayEntries, yesterdayEntries, weekEntries, monthEntries, earlierEntries []*model.Entry
+
+	// Fetch entries only for the selected section
+	switch section {
+	case "today":
+		todayEntries, err = fetchForDateRange(&todayStart, nil)
+		if err != nil {
+			html.ServerError(w, r, err)
+			return
+		}
+	case "yesterday":
+		yesterdayEntries, err = fetchForDateRange(&yesterdayStart, &todayStart)
+		if err != nil {
+			html.ServerError(w, r, err)
+			return
+		}
+	case "week":
+		weekEntries, err = fetchForDateRange(&weekStart, &yesterdayStart)
+		if err != nil {
+			html.ServerError(w, r, err)
+			return
+		}
+	case "month":
+		monthEntries, err = fetchForDateRange(&monthStart, &weekStart)
+		if err != nil {
+			html.ServerError(w, r, err)
+			return
+		}
+	case "earlier":
+		earlierEntries, err = fetchForDateRange(nil, &monthStart)
+		if err != nil {
+			html.ServerError(w, r, err)
+			return
+		}
+	default: // "all" or any other value
+		// Fetch all sections
+		todayEntries, err = fetchForDateRange(&todayStart, nil)
+		if err != nil {
+			html.ServerError(w, r, err)
+			return
+		}
+		yesterdayEntries, err = fetchForDateRange(&yesterdayStart, &todayStart)
+		if err != nil {
+			html.ServerError(w, r, err)
+			return
+		}
+		weekEntries, err = fetchForDateRange(&weekStart, &yesterdayStart)
+		if err != nil {
+			html.ServerError(w, r, err)
+			return
+		}
+		monthEntries, err = fetchForDateRange(&monthStart, &weekStart)
+		if err != nil {
+			html.ServerError(w, r, err)
+			return
+		}
+		earlierEntries, err = fetchForDateRange(nil, &monthStart)
+		if err != nil {
+			html.ServerError(w, r, err)
+			return
+		}
 	}
 
 	// Calculate total count
-	countUnread, err := h.store.NewEntryQueryBuilder(user.ID).
-		WithStatus(model.EntryStatusUnread).
-		WithGloballyVisible().
-		CountEntries()
-	if err != nil {
-		html.ServerError(w, r, err)
-		return
-	}
+	countUnread := countToday + countYesterday + countWeek + countMonth + countEarlier
 
 	sess := session.New(h.store, request.SessionID(r))
 	view := view.New(h.tpl, r, sess)
@@ -120,11 +173,12 @@ func (h *handler) showDateEntriesPage(w http.ResponseWriter, r *http.Request) {
 	view.Set("weekEntries", weekEntries)
 	view.Set("monthEntries", monthEntries)
 	view.Set("earlierEntries", earlierEntries)
-	view.Set("countToday", len(todayEntries))
-	view.Set("countYesterday", len(yesterdayEntries))
-	view.Set("countWeek", len(weekEntries))
-	view.Set("countMonth", len(monthEntries))
-	view.Set("countEarlier", len(earlierEntries))
+	view.Set("countToday", countToday)
+	view.Set("countYesterday", countYesterday)
+	view.Set("countWeek", countWeek)
+	view.Set("countMonth", countMonth)
+	view.Set("countEarlier", countEarlier)
+	view.Set("section", section)
 	view.Set("menu", "date_entries")
 	view.Set("user", user)
 	view.Set("countUnread", countUnread)

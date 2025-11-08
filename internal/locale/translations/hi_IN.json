@@ -394,6 +394,7 @@
     "form.user.label.password": "पासवर्ड",
     "form.user.label.username": "उपयोगकर्ता नाम",
     "menu.about": "के बारे में",
+    "menu.all_entries": "All",
     "menu.add_feed": "सदस्यता जोरीय",
     "menu.add_user": "उपयोगकर्ता जोड़ें",
     "menu.api_keys": "एपीआई कुंजी",

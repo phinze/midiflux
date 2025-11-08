@@ -397,6 +397,7 @@
     "form.user.label.password": "Parolă",
     "form.user.label.username": "Nume utilizator",
     "menu.about": "Despre",
+    "menu.all_entries": "All",
     "menu.add_feed": "Adaugă flux",
     "menu.add_user": "Adaugă utilizator",
     "menu.api_keys": "Chei API",

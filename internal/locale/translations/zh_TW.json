@@ -391,6 +391,7 @@
     "form.user.label.password": "密碼",
     "form.user.label.username": "使用者名稱",
     "menu.about": "關於",
+    "menu.all_entries": "All",
     "menu.add_feed": "新增 Feed",
     "menu.add_user": "新建使用者",
     "menu.api_keys": "API 金鑰",

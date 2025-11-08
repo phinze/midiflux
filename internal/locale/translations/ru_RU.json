@@ -397,6 +397,7 @@
     "form.user.label.password": "Пароль",
     "form.user.label.username": "Имя пользователя",
     "menu.about": "О приложении",
+    "menu.all_entries": "All",
     "menu.add_feed": "Добавить подписку",
     "menu.add_user": "Добавить пользователя",
     "menu.api_keys": "API-ключи",
