@@ -1,0 +1,183 @@
+{{ define "title"}}{{ t "page.date_entries.title" }} {{ if gt .countUnread 0 }}({{ .countUnread }}){{ end }}{{ end }}
+
+{{ define "page_header"}}
+<section class="page-header" aria-labelledby="page-header-title page-header-title-count">
+    <h1 id="page-header-title">
+        {{ t "page.date_entries.title" }}
+        <span aria-hidden="true">(<span class="unread-counter">{{ .countUnread }}</span>)</span>
+    </h1>
+    <span id="page-header-title-count" class="sr-only">{{ plural "page.unread_entry_count" .countUnread .countUnread }}</span>
+</section>
+{{ end }}
+
+{{ define "content"}}
+{{ if eq .countUnread 0 }}
+    <p role="alert" class="alert">{{ t "alert.no_unread_entry" }}</p>
+{{ else }}
+    {{ if gt (len .todayEntries) 0 }}
+    <section class="date-group">
+        <h2 class="date-group-header">{{ t "date_group.today" }}</h2>
+        <div class="items hide-read-items">
+            {{ range .todayEntries -}}
+            <article
+                class="item entry-item {{ if $.user.EntrySwipe }}entry-swipe{{ end }} item-status-{{ .Status }}"
+                data-id="{{ .ID }}"
+                aria-labelledby="entry-title-{{ .ID }}"
+                tabindex="-1"
+            >
+                <header class="item-header" dir="auto">
+                    <h3 id="entry-title-{{ .ID }}" class="item-title">
+                        <a href="{{ route "unreadEntry" "entryID" .ID }}">
+                            {{ if ne .Feed.Icon.IconID 0 -}}
+                            <img src="{{ route "feedIcon" "externalIconID" .Feed.Icon.ExternalIconID }}" width="16" height="16" loading="lazy" alt="">
+                            {{ end -}}
+                            {{ .Title }}
+                        </a>
+                    </h3>
+                    <span class="category">
+                        <a href="{{ route "categoryEntries" "categoryID" .Feed.Category.ID }}">
+                            {{ .Feed.Category.Title }}
+                        </a>
+                    </span>
+                </header>
+                {{ template "item_meta" dict "user" $.user "entry" . "hasSaveEntry" $.hasSaveEntry -}}
+            </article>
+            {{ end }}
+        </div>
+    </section>
+    {{ end }}
+
+    {{ if gt (len .yesterdayEntries) 0 }}
+    <section class="date-group">
+        <h2 class="date-group-header">{{ t "date_group.yesterday" }}</h2>
+        <div class="items hide-read-items">
+            {{ range .yesterdayEntries -}}
+            <article
+                class="item entry-item {{ if $.user.EntrySwipe }}entry-swipe{{ end }} item-status-{{ .Status }}"
+                data-id="{{ .ID }}"
+                aria-labelledby="entry-title-{{ .ID }}"
+                tabindex="-1"
+            >
+                <header class="item-header" dir="auto">
+                    <h3 id="entry-title-{{ .ID }}" class="item-title">
+                        <a href="{{ route "unreadEntry" "entryID" .ID }}">
+                            {{ if ne .Feed.Icon.IconID 0 -}}
+                            <img src="{{ route "feedIcon" "externalIconID" .Feed.Icon.ExternalIconID }}" width="16" height="16" loading="lazy" alt="">
+                            {{ end -}}
+                            {{ .Title }}
+                        </a>
+                    </h3>
+                    <span class="category">
+                        <a href="{{ route "categoryEntries" "categoryID" .Feed.Category.ID }}">
+                            {{ .Feed.Category.Title }}
+                        </a>
+                    </span>
+                </header>
+                {{ template "item_meta" dict "user" $.user "entry" . "hasSaveEntry" $.hasSaveEntry -}}
+            </article>
+            {{ end }}
+        </div>
+    </section>
+    {{ end }}
+
+    {{ if gt (len .weekEntries) 0 }}
+    <section class="date-group">
+        <h2 class="date-group-header">{{ t "date_group.this_week" }}</h2>
+        <div class="items hide-read-items">
+            {{ range .weekEntries -}}
+            <article
+                class="item entry-item {{ if $.user.EntrySwipe }}entry-swipe{{ end }} item-status-{{ .Status }}"
+                data-id="{{ .ID }}"
+                aria-labelledby="entry-title-{{ .ID }}"
+                tabindex="-1"
+            >
+                <header class="item-header" dir="auto">
+                    <h3 id="entry-title-{{ .ID }}" class="item-title">
+                        <a href="{{ route "unreadEntry" "entryID" .ID }}">
+                            {{ if ne .Feed.Icon.IconID 0 -}}
+                            <img src="{{ route "feedIcon" "externalIconID" .Feed.Icon.ExternalIconID }}" width="16" height="16" loading="lazy" alt="">
+                            {{ end -}}
+                            {{ .Title }}
+                        </a>
+                    </h3>
+                    <span class="category">
+                        <a href="{{ route "categoryEntries" "categoryID" .Feed.Category.ID }}">
+                            {{ .Feed.Category.Title }}
+                        </a>
+                    </span>
+                </header>
+                {{ template "item_meta" dict "user" $.user "entry" . "hasSaveEntry" $.hasSaveEntry -}}
+            </article>
+            {{ end }}
+        </div>
+    </section>
+    {{ end }}
+
+    {{ if gt (len .monthEntries) 0 }}
+    <section class="date-group">
+        <h2 class="date-group-header">{{ t "date_group.this_month" }}</h2>
+        <div class="items hide-read-items">
+            {{ range .monthEntries -}}
+            <article
+                class="item entry-item {{ if $.user.EntrySwipe }}entry-swipe{{ end }} item-status-{{ .Status }}"
+                data-id="{{ .ID }}"
+                aria-labelledby="entry-title-{{ .ID }}"
+                tabindex="-1"
+            >
+                <header class="item-header" dir="auto">
+                    <h3 id="entry-title-{{ .ID }}" class="item-title">
+                        <a href="{{ route "unreadEntry" "entryID" .ID }}">
+                            {{ if ne .Feed.Icon.IconID 0 -}}
+                            <img src="{{ route "feedIcon" "externalIconID" .Feed.Icon.ExternalIconID }}" width="16" height="16" loading="lazy" alt="">
+                            {{ end -}}
+                            {{ .Title }}
+                        </a>
+                    </h3>
+                    <span class="category">
+                        <a href="{{ route "categoryEntries" "categoryID" .Feed.Category.ID }}">
+                            {{ .Feed.Category.Title }}
+                        </a>
+                    </span>
+                </header>
+                {{ template "item_meta" dict "user" $.user "entry" . "hasSaveEntry" $.hasSaveEntry -}}
+            </article>
+            {{ end }}
+        </div>
+    </section>
+    {{ end }}
+
+    {{ if gt (len .earlierEntries) 0 }}
+    <section class="date-group">
+        <h2 class="date-group-header">{{ t "date_group.earlier" }}</h2>
+        <div class="items hide-read-items">
+            {{ range .earlierEntries -}}
+            <article
+                class="item entry-item {{ if $.user.EntrySwipe }}entry-swipe{{ end }} item-status-{{ .Status }}"
+                data-id="{{ .ID }}"
+                aria-labelledby="entry-title-{{ .ID }}"
+                tabindex="-1"
+            >
+                <header class="item-header" dir="auto">
+                    <h3 id="entry-title-{{ .ID }}" class="item-title">
+                        <a href="{{ route "unreadEntry" "entryID" .ID }}">
+                            {{ if ne .Feed.Icon.IconID 0 -}}
+                            <img src="{{ route "feedIcon" "externalIconID" .Feed.Icon.ExternalIconID }}" width="16" height="16" loading="lazy" alt="">
+                            {{ end -}}
+                            {{ .Title }}
+                        </a>
+                    </h3>
+                    <span class="category">
+                        <a href="{{ route "categoryEntries" "categoryID" .Feed.Category.ID }}">
+                            {{ .Feed.Category.Title }}
+                        </a>
+                    </span>
+                </header>
+                {{ template "item_meta" dict "user" $.user "entry" . "hasSaveEntry" $.hasSaveEntry -}}
+            </article>
+            {{ end }}
+        </div>
+    </section>
+    {{ end }}
+{{ end }}
+
+{{ end }}
