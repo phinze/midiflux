@@ -10,27 +10,24 @@
     {{ if gt .countUnread 0 }}
     <nav aria-label="{{ t "page.date_entries.title" }} sections">
         <ul>
-            <li {{ if eq .section "all" }}class="active"{{ end }}>
-                <a href="{{ route "dateEntries" }}">{{ t "menu.all_entries" }} ({{ .countUnread }})</a>
-            </li>
             {{ if gt .countToday 0 }}
             <li {{ if eq .section "today" }}class="active"{{ end }}>
                 <a href="{{ route "dateEntries" }}?section=today">{{ t "date_group.today" }} ({{ .countToday }})</a>
             </li>
             {{ end }}
-            {{ if gt .countYesterday 0 }}
-            <li {{ if eq .section "yesterday" }}class="active"{{ end }}>
-                <a href="{{ route "dateEntries" }}?section=yesterday">{{ t "date_group.yesterday" }} ({{ .countYesterday }})</a>
+            {{ if gt .countLast2d 0 }}
+            <li {{ if eq .section "last2d" }}class="active"{{ end }}>
+                <a href="{{ route "dateEntries" }}?section=last2d">{{ t "date_group.last_2d" }} ({{ .countLast2d }})</a>
             </li>
             {{ end }}
-            {{ if gt .countWeek 0 }}
-            <li {{ if eq .section "week" }}class="active"{{ end }}>
-                <a href="{{ route "dateEntries" }}?section=week">{{ t "date_group.this_week" }} ({{ .countWeek }})</a>
+            {{ if gt .countLast7d 0 }}
+            <li {{ if eq .section "last7d" }}class="active"{{ end }}>
+                <a href="{{ route "dateEntries" }}?section=last7d">{{ t "date_group.last_7d" }} ({{ .countLast7d }})</a>
             </li>
             {{ end }}
-            {{ if gt .countMonth 0 }}
-            <li {{ if eq .section "month" }}class="active"{{ end }}>
-                <a href="{{ route "dateEntries" }}?section=month">{{ t "date_group.this_month" }} ({{ .countMonth }})</a>
+            {{ if gt .countLast30d 0 }}
+            <li {{ if eq .section "last30d" }}class="active"{{ end }}>
+                <a href="{{ route "dateEntries" }}?section=last30d">{{ t "date_group.last_30d" }} ({{ .countLast30d }})</a>
             </li>
             {{ end }}
             {{ if gt .countEarlier 0 }}
@@ -38,6 +35,9 @@
                 <a href="{{ route "dateEntries" }}?section=earlier">{{ t "date_group.earlier" }} ({{ .countEarlier }})</a>
             </li>
             {{ end }}
+            <li {{ if eq .section "all" }}class="active"{{ end }}>
+                <a href="{{ route "dateEntries" }}">{{ t "menu.all_entries" }} ({{ .countUnread }})</a>
+            </li>
         </ul>
     </nav>
     {{ end }}
@@ -81,11 +81,11 @@
     </section>
     {{ end }}
 
-    {{ if gt (len .yesterdayEntries) 0 }}
+    {{ if gt (len .last2dEntries) 0 }}
     <section class="date-group">
-        <h2 class="date-group-header">{{ t "date_group.yesterday" }} <span class="count">({{ .countYesterday }})</span></h2>
+        <h2 class="date-group-header">{{ t "date_group.last_2d" }} <span class="count">({{ .countLast2d }})</span></h2>
         <div class="items hide-read-items">
-            {{ range .yesterdayEntries -}}
+            {{ range .last2dEntries -}}
             <article
                 class="item entry-item {{ if $.user.EntrySwipe }}entry-swipe{{ end }} item-status-{{ .Status }}"
                 data-id="{{ .ID }}"
@@ -114,11 +114,11 @@
     </section>
     {{ end }}
 
-    {{ if gt (len .weekEntries) 0 }}
+    {{ if gt (len .last7dEntries) 0 }}
     <section class="date-group">
-        <h2 class="date-group-header">{{ t "date_group.this_week" }} <span class="count">({{ .countWeek }})</span></h2>
+        <h2 class="date-group-header">{{ t "date_group.last_7d" }} <span class="count">({{ .countLast7d }})</span></h2>
         <div class="items hide-read-items">
-            {{ range .weekEntries -}}
+            {{ range .last7dEntries -}}
             <article
                 class="item entry-item {{ if $.user.EntrySwipe }}entry-swipe{{ end }} item-status-{{ .Status }}"
                 data-id="{{ .ID }}"
@@ -147,11 +147,11 @@
     </section>
     {{ end }}
 
-    {{ if gt (len .monthEntries) 0 }}
+    {{ if gt (len .last30dEntries) 0 }}
     <section class="date-group">
-        <h2 class="date-group-header">{{ t "date_group.this_month" }} <span class="count">({{ .countMonth }})</span></h2>
+        <h2 class="date-group-header">{{ t "date_group.last_30d" }} <span class="count">({{ .countLast30d }})</span></h2>
         <div class="items hide-read-items">
-            {{ range .monthEntries -}}
+            {{ range .last30dEntries -}}
             <article
                 class="item entry-item {{ if $.user.EntrySwipe }}entry-swipe{{ end }} item-status-{{ .Status }}"
                 data-id="{{ .ID }}"
