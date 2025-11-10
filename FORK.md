@@ -30,7 +30,24 @@ A chronological view that groups unread entries into rolling date sections:
 
 - **Base Version:** Miniflux v2.2.14 (+ 13 commits)
 - **Upstream Remote:** `https://github.com/miniflux/v2.git`
-- **Sync Strategy:** Rebase workflow for clean history
+- **Branch Strategy:** Single main branch with custom commits on top
+
+### Philosophy
+
+This fork uses a **single-branch strategy** where `main` contains:
+1. All upstream commits from `miniflux/v2`
+2. Custom commits on top (always rebased to stay current)
+
+**Why single-branch?**
+- Simpler to maintain (one branch to deploy)
+- GitHub Actions CI works automatically
+- Custom commits float on top after each upstream rebase
+- Clear deployment target
+
+**For development:**
+- Use feature branches locally while developing
+- Merge to `main` when ready to deploy
+- `main` is the production branch
 
 ### Maintenance Workflow
 
@@ -45,19 +62,13 @@ git log HEAD..upstream/main --oneline --graph
 git diff HEAD..upstream/main internal/ui/ui.go
 git diff HEAD..upstream/main internal/template/engine.go
 
-# 3. Sync main branch
+# 3. Rebase main on upstream (custom commits stay on top)
 git checkout main
 git rebase upstream/main
 # Fix any conflicts if needed
 git push origin main --force-with-lease
 
-# 4. Rebase feature branches
-git checkout feature/date-based-view
-git rebase main
-# Fix any conflicts if needed
-git push origin feature/date-based-view --force-with-lease
-
-# 5. Test and redeploy
+# 4. Test and redeploy
 # Run tests, verify features, then deploy via Nomad
 ```
 
@@ -111,12 +122,12 @@ See `DEV.md` for detailed development setup instructions.
 Custom builds are automatically published to GitHub Container Registry:
 
 - **Image:** `ghcr.io/phinze/midiflux:latest`
-- **Build Trigger:** Pushes to `main` and `feature/*` branches
+- **Build Trigger:** Pushes to `main` branch
 - **Workflow:** `.github/workflows/docker.yml`
 
-Branch-specific images are also available:
-- `ghcr.io/phinze/midiflux:feature-date-based-view`
-- `ghcr.io/phinze/midiflux:main-<sha>`
+Tagged images are also available:
+- `ghcr.io/phinze/midiflux:main` - latest main branch
+- `ghcr.io/phinze/midiflux:main-<sha>` - specific commit
 
 ### Personal Infrastructure
 
