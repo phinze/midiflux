@@ -57,6 +57,7 @@ func Serve(router *mux.Router, store *storage.Storage, pool *worker.Pool) {
 
 	// Date-based entries page (custom feature).
 	uiRouter.HandleFunc("/entries/by-date", handler.showDateEntriesPage).Name("dateEntries").Methods(http.MethodGet)
+	uiRouter.HandleFunc("/entries/by-date/mark-all-as-read", handler.markDateEntriesAsRead).Name("markDateEntriesAsRead").Methods(http.MethodPost)
 
 	// Search pages.
 	uiRouter.HandleFunc("/search", handler.showSearchPage).Name("search").Methods(http.MethodGet)

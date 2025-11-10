@@ -609,6 +609,52 @@ func (s *Storage) MarkGloballyVisibleFeedsAsRead(userID int64) error {
 	return nil
 }
 
+// CUSTOM: MarkEntriesAsReadInDateRange marks entries as read within a date range for globally visible feeds.
+func (s *Storage) MarkEntriesAsReadInDateRange(userID int64, afterDate, beforeDate *time.Time) error {
+	query := `
+		UPDATE
+			entries
+		SET
+			status=$1,
+			changed_at=now()
+		FROM
+			feeds
+		WHERE
+			entries.feed_id = feeds.id
+			AND entries.user_id=$2
+			AND entries.status=$3
+			AND feeds.hide_globally=$4
+	`
+	args := []interface{}{model.EntryStatusRead, userID, model.EntryStatusUnread, false}
+	argIndex := 5
+
+	if afterDate != nil {
+		query += fmt.Sprintf(" AND entries.published_at >= $%d", argIndex)
+		args = append(args, *afterDate)
+		argIndex++
+	}
+
+	if beforeDate != nil {
+		query += fmt.Sprintf(" AND entries.published_at < $%d", argIndex)
+		args = append(args, *beforeDate)
+	}
+
+	result, err := s.db.Exec(query, args...)
+	if err != nil {
+		return fmt.Errorf(`store: unable to mark entries as read in date range: %v`, err)
+	}
+
+	count, _ := result.RowsAffected()
+	slog.Debug("Marked entries as read in date range",
+		slog.Int64("user_id", userID),
+		slog.Int64("nb_entries", count),
+		slog.Any("after_date", afterDate),
+		slog.Any("before_date", beforeDate),
+	)
+
+	return nil
+}
+
 // MarkFeedAsRead updates all feed entries to the read status.
 func (s *Storage) MarkFeedAsRead(userID, feedID int64, before time.Time) error {
 	query := `

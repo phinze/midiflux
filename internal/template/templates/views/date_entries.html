@@ -8,6 +8,21 @@
     </h1>
     <span id="page-header-title-count" class="sr-only">{{ plural "page.unread_entry_count" .countUnread .countUnread }}</span>
     {{ if gt .countUnread 0 }}
+    <nav aria-label="{{ t "page.date_entries.title" }} {{ t "menu.title" }}">
+        <ul>
+            <li>
+                <button
+                    class="page-button"
+                    data-confirm="true"
+                    data-url="{{ route "markDateEntriesAsRead" }}?section={{ .section }}"
+                    data-redirect-url="{{ route "dateEntries" }}?section={{ .section }}"
+                    data-label-question="{{ t "confirm.question" }}"
+                    data-label-yes="{{ t "confirm.yes" }}"
+                    data-label-no="{{ t "confirm.no" }}"
+                    data-label-loading="{{ t "confirm.loading" }}">{{ icon "mark-all-as-read" }}{{ t "menu.mark_all_as_read" }}</button>
+            </li>
+        </ul>
+    </nav>
     <nav aria-label="{{ t "page.date_entries.title" }} sections">
         <ul>
             {{ if gt .countToday 0 }}
