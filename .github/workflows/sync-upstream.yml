@@ -1,0 +1,82 @@
+name: Sync Upstream
+
+on:
+  schedule:
+    # Check for upstream changes daily at 2am
+    - cron: '0 2 * * *'
+  workflow_dispatch: # Manual trigger
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Add upstream remote
+        run: |
+          git remote add upstream https://github.com/miniflux/v2.git
+          git fetch upstream
+
+      - name: Check for upstream changes
+        id: check
+        run: |
+          git fetch upstream main
+          BEHIND=$(git rev-list --count HEAD..upstream/main)
+          echo "commits_behind=$BEHIND" >> $GITHUB_OUTPUT
+
+          if [ "$BEHIND" -gt 0 ]; then
+            echo "🔔 Your fork is $BEHIND commits behind upstream"
+            echo "has_updates=true" >> $GITHUB_OUTPUT
+          else
+            echo "✅ Your fork is up to date with upstream"
+            echo "has_updates=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create issue if behind
+        if: steps.check.outputs.has_updates == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const commits = '${{ steps.check.outputs.commits_behind }}';
+            const body = `## Upstream Updates Available
+
+Your fork is **${commits} commits** behind [miniflux/v2](https://github.com/miniflux/v2).
+
+### To sync:
+\`\`\`bash
+git checkout main
+git fetch upstream
+git rebase upstream/main  # or: git merge upstream/main
+git push origin main --force-with-lease  # or: git push origin main
+
+git checkout feature/date-based-view
+git rebase main
+git push origin feature/date-based-view --force-with-lease
+\`\`\`
+
+### Review upstream changes:
+\`\`\`bash
+git log HEAD..upstream/main --oneline
+\`\`\`
+`;
+
+            // Check if issue already exists
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'upstream-sync'
+            });
+
+            if (issues.data.length === 0) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `🔔 Upstream updates available (${commits} commits behind)`,
+                body: body,
+                labels: ['upstream-sync']
+              });
+            }

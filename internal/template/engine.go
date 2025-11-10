@@ -48,6 +48,7 @@ func (e *Engine) ParseTemplates() {
 		"create_api_key.html":      {"layout.html", "settings_menu.html"},
 		"create_category.html":     {"layout.html"},
 		"create_user.html":         {"layout.html", "settings_menu.html"},
+		"date_entries.html":        {"item_meta.html", "layout.html"},
 		"edit_category.html":       {"layout.html", "settings_menu.html"},
 		"edit_feed.html":           {"layout.html"},
 		"edit_user.html":           {"layout.html", "settings_menu.html"},
