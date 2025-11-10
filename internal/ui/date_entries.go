@@ -28,12 +28,16 @@ func (h *handler) showDateEntriesPage(w http.ResponseWriter, r *http.Request) {
 	// Get current time in user's timezone
 	now := timezone.Now(user.Timezone)
 
-	// Calculate date boundaries (rolling windows)
-	todayStart := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
-	last2dStart := todayStart.AddDate(0, 0, -3)   // Last 2 days: days -1 and -2
-	last7dStart := todayStart.AddDate(0, 0, -10)  // Last 7 days: days -3 to -9
-	last30dStart := todayStart.AddDate(0, 0, -40) // Last 30 days: days -10 to -39
-	// Earlier: anything before last30dStart (>40 days ago)
+	// Calculate date boundaries using rolling time windows to align with elapsed time display
+	// These match the elapsedTime function logic in internal/template/functions.go:
+	// - < 24h: "X hours ago" → Today
+	// - 24-48h: "yesterday" → Last 2 days
+	// - 2-21 days: "X days ago" → Last 7 days / Last 30 days
+	todayStart := now.Add(-24 * time.Hour)        // Last 24 hours (< 86400 seconds)
+	last2dStart := now.Add(-48 * time.Hour)       // 24-48 hours ago (matches "yesterday")
+	last7dStart := now.Add(-7 * 24 * time.Hour)   // 2-7 days ago
+	last30dStart := now.Add(-30 * 24 * time.Hour) // 7-30 days ago
+	// Earlier: anything before last30dStart (>30 days ago)
 
 	// Helper function to count entries for a date range
 	countForDateRange := func(afterDate, beforeDate *time.Time) (int, error) {
