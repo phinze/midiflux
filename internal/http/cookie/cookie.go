@@ -25,7 +25,7 @@ func New(name, value string, isHTTPS bool, path string) *http.Cookie {
 		Secure:   isHTTPS,
 		HttpOnly: true,
 		Expires:  time.Now().Add(config.Opts.CleanupRemoveSessionsInterval()),
-		SameSite: http.SameSiteLaxMode,
+		SameSite: http.SameSiteNoneMode, // CUSTOM: Changed from Lax to None for Tailscale/mobile browser compatibility
 	}
 }
 
@@ -39,7 +39,7 @@ func Expired(name string, isHTTPS bool, path string) *http.Cookie {
 		HttpOnly: true,
 		MaxAge:   -1,
 		Expires:  time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC),
-		SameSite: http.SameSiteLaxMode,
+		SameSite: http.SameSiteNoneMode, // CUSTOM: Changed from Lax to None for Tailscale/mobile browser compatibility
 	}
 }
 
